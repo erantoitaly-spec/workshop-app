@@ -4,25 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workshop Inspection Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; padding: 15px; background: #f4f4f4; color: #333; margin: 0; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; font-size: 16px; }
-        button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            padding: 20px; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        #app {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h2 { 
+            color: var(--primary); 
+            text-align: center; 
+            font-weight: 700;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            letter-spacing: -0.025em;
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 24px; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); 
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        h3 {
+            margin-top: 0;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+        }
+
+        input, button { 
+            width: 100%; 
+            padding: 14px; 
+            margin: 10px 0; 
+            border-radius: 10px; 
+            border: 1px solid #cbd5e1; 
+            box-sizing: border-box; 
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        button { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            font-weight: 600; 
+            cursor: pointer; 
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
         .hidden { display: none; }
         
         /* Checklist Styling */
-        .check-item { border-bottom: 1px solid #eee; padding: 15px 0; }
-        .check-item label { display: block; margin-bottom: 10px; font-weight: bold; }
-        .btn-group { display: flex; gap: 5px; }
-        .btn-group button { flex: 1; font-size: 12px; padding: 10px 5px; color: white; border: 2px solid transparent; }
-        .btn-green { background: #28a745; opacity: 0.4; }
-        .btn-yellow { background: #ffc107; color: black !important; opacity: 0.4; }
-        .btn-red { background: #dc3545; opacity: 0.4; }
-        .active { opacity: 1 !important; border-color: #000 !important; transform: scale(1.05); }
+        .check-item { 
+            border-bottom: 1px solid #f1f5f9; 
+            padding: 20px 0; 
+        }
+
+        .check-item:last-child { border-bottom: none; }
+
+        .check-item label { 
+            display: block; 
+            margin-bottom: 12px; 
+            font-weight: 600; 
+            font-size: 1.1rem;
+        }
+
+        .btn-group { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px; 
+            margin-bottom: 12px;
+        }
+
+        .btn-group button { 
+            margin: 0;
+            font-size: 0.875rem; 
+            padding: 12px 5px; 
+            color: white; 
+            border: 2px solid transparent; 
+            opacity: 0.5;
+        }
+
+        .btn-green { background: var(--success); }
+        .btn-yellow { background: var(--warning); color: #000 !important; }
+        .btn-red { background: var(--danger); }
+
+        .active { 
+            opacity: 1 !important; 
+            border-color: #1e293b !important; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: scale(1.02);
+        }
         
-        .photo-status { font-size: 13px; color: #28a745; display: block; margin-bottom: 10px; font-weight: bold; }
-        .secondary { background: #6c757d; }
+        .photo-status { 
+            font-size: 14px; 
+            color: var(--success); 
+            display: block; 
+            margin-bottom: 10px; 
+            font-weight: 600; 
+        }
+
+        .secondary { background: #64748b; }
+        .secondary:hover { background: #475569; }
+
+        .note-input {
+            background: #f8fafc;
+            border-style: dashed;
+            font-size: 0.875rem;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .btn-group {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .btn-group button {
+                padding: 10px;
+            }
+            body { padding: 15px; }
+        }
     </style>
 </head>
 <body>
@@ -93,10 +234,24 @@
                     <button class="btn-yellow" onclick="setCheck('${item}', 'Warning', this)">🟡 Advise</button>
                     <button class="btn-red" onclick="setCheck('${item}', 'Bad', this)">🔴 Urgent</button>
                 </div>
-                <input type="text" id="note-${item}" placeholder="Add notes for ${item}..." style="font-size: 13px; height: 35px; margin-top: 5px;">
+                <input type="text" id="note-${item}" class="note-input" placeholder="Add notes for ${item}...">
             `;
             checklistContent.appendChild(div);
         });
+
+        // GLOBAL UPDATE FUNCTION
+        window.UpdateDoc = async function(collectionName, plate, data) {
+            try {
+                const docRef = doc(db, collectionName, plate);
+                await setDoc(docRef, data, { merge: true });
+                console.log(`Document updated in ${collectionName}`);
+                return true;
+            } catch (error) {
+                console.error("Error updating document: ", error);
+                alert("Correction needed: " + error.message);
+                return false;
+            }
+        };
 
         window.setCheck = function(item, status, btn) {
             inspectionData[item] = status;
@@ -128,7 +283,13 @@
 
         // SAVE REPORT
         document.getElementById('submitReportBtn').onclick = async () => {
+            if (Object.keys(inspectionData).length === 0) {
+                alert("Please check at least one item.");
+                return;
+            }
+
             const finalReport = {
+                plate: currentPlate,
                 results: inspectionData,
                 notes: {},
                 timestamp: new Date().toISOString()
@@ -138,12 +299,18 @@
                 finalReport.notes[item] = document.getElementById(`note-${item}`).value;
             });
 
-            await updateDoc(doc(db, "vehicles", currentPlate), {
-                lastInspection: finalReport
-            });
+            // Using the correct path for inspections collection
+            const success = await window.UpdateDoc("inspections", currentPlate, finalReport);
             
-            alert("Report Saved Successfully!");
-            location.reload();
+            if (success) {
+                // Also update vehicle last inspection date
+                await window.UpdateDoc("vehicles", currentPlate, {
+                    lastInspectionDate: finalReport.timestamp
+                });
+                
+                alert("Inspection Report Saved Successfully!");
+                location.reload();
+            }
         };
 
         // IMAGE UPLOAD (Reusable)
@@ -159,13 +326,17 @@
 
         document.getElementById('saveVehicleBtn').onclick = async () => {
             const data = {
+                plate: currentPlate,
                 custName: document.getElementById('custName').value,
                 make: document.getElementById('make').value,
                 model: document.getElementById('model').value,
-                photo: window.lastPhoto || ""
+                photo: window.lastPhoto || "",
+                createdAt: new Date().toISOString()
             };
-            await setDoc(doc(db, "vehicles", currentPlate), data);
-            showInspection(data.custName);
+            const success = await window.UpdateDoc("vehicles", currentPlate, data);
+            if (success) {
+                showInspection(data.custName);
+            }
         };
     </script>
 </body>
