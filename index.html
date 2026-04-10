@@ -1,1 +1,23 @@
 <h1>Workshop App Initializing...</h1>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  // Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBVnZytKuBeA8YeIaMGnsBJI1lCLKuDdXM",
+  authDomain: "workshop-quote-app.firebaseapp.com",
+  projectId: "workshop-quote-app",
+  storageBucket: "workshop-quote-app.firebasestorage.app",
+  messagingSenderId: "188027000475",
+  appId: "1:188027000475:web:36e73e59cfa53ad077983e"
+};
+
+  // Initialize Firebase and Firestore
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // We will add the "Search" function here next!
+</script>
