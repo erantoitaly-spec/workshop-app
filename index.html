@@ -5,68 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workshop Inspection Pro</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; color: #333; }
+        body { font-family: sans-serif; padding: 15px; background: #f4f4f4; color: #333; margin: 0; }
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
         input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; font-size: 16px; }
         button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
-        button:active { background: #0056b3; }
-        button.secondary { background: #6c757d; margin-top: 5px; }
         .hidden { display: none; }
+        
+        /* Checklist Styling */
+        .check-item { border-bottom: 1px solid #eee; padding: 15px 0; }
+        .check-item label { display: block; margin-bottom: 10px; font-weight: bold; }
+        .btn-group { display: flex; gap: 5px; }
+        .btn-group button { flex: 1; font-size: 12px; padding: 10px 5px; color: white; border: 2px solid transparent; }
+        .btn-green { background: #28a745; opacity: 0.4; }
+        .btn-yellow { background: #ffc107; color: black !important; opacity: 0.4; }
+        .btn-red { background: #dc3545; opacity: 0.4; }
+        .active { opacity: 1 !important; border-color: #000 !important; transform: scale(1.05); }
+        
         .photo-status { font-size: 13px; color: #28a745; display: block; margin-bottom: 10px; font-weight: bold; }
-        hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
-        label { font-weight: bold; font-size: 14px; }
+        .secondary { background: #6c757d; }
     </style>
 </head>
 <body>
 
-    <h2>🚗 Workshop Inspection</h2>
+    <div id="app">
+        <h2>🚗 Workshop Pro</h2>
 
-    <div id="searchSection" class="card">
-        <label>Enter Plate Number</label>
-        <input type="text" id="plateInput" placeholder="e.g. DXB A 12345">
-        <button id="checkBtn">Check History</button>
-    </div>
+        <div id="searchSection" class="card">
+            <label>Plate Number</label>
+            <input type="text" id="plateInput" placeholder="DXB A 12345">
+            <button id="checkBtn">Check / Start</button>
+        </div>
 
-    <div id="newVehicleSection" class="card hidden">
-        <h3 style="color: #007bff; margin-top: 0;">New Vehicle Details</h3>
-        
-        <label>1. Take Required Photos</label>
-        
-        <button class="secondary" onclick="document.getElementById('photoRear').click()">📷 Take Rear Photo</button>
-        <input type="file" id="photoRear" accept="image/*" capture="camera" style="display:none">
-        <span id="statusRear" class="photo-status"></span>
+        <div id="newVehicleSection" class="card hidden">
+            <h3 style="color: #007bff;">New Vehicle Registration</h3>
+            <button class="secondary" onclick="document.getElementById('photoRear').click()">📷 Rear Photo</button>
+            <input type="file" id="photoRear" accept="image/*" capture="camera" style="display:none" onchange="uploadImage(this, 'statusRear', 'rear')">
+            <span id="statusRear" class="photo-status"></span>
+            
+            <input type="text" id="make" placeholder="Make">
+            <input type="text" id="model" placeholder="Model">
+            <input type="text" id="custName" placeholder="Customer Name">
+            <input type="tel" id="custMobile" placeholder="Mobile Number">
+            <button id="saveVehicleBtn" style="background: #28a745;">Save Vehicle</button>
+        </div>
 
-        <button class="secondary" onclick="document.getElementById('photoChassis').click()">📷 Take Chassis Sticker</button>
-        <input type="file" id="photoChassis" accept="image/*" capture="camera" style="display:none">
-        <span id="statusChassis" class="photo-status"></span>
+        <div id="inspectionSection" class="card hidden">
+            <h3 id="inspectTitle">Inspection Report</h3>
+            
+            <div id="checklistContent">
+                </div>
 
-        <button class="secondary" onclick="document.getElementById('photoCluster').click()">📷 Take Cluster (KM)</button>
-        <input type="file" id="photoCluster" accept="image/*" capture="camera" style="display:none">
-        <span id="statusCluster" class="photo-status"></span>
-
-        <hr>
-        <label>2. General Information</label>
-        <input type="text" id="make" placeholder="Vehicle Make (Toyota)">
-        <input type="text" id="model" placeholder="Model (Corolla)">
-        <input type="text" id="custName" placeholder="Customer Name">
-        <input type="tel" id="custMobile" placeholder="Mobile Number">
-        <input type="text" id="vin" placeholder="Chassis Number">
-        <input type="number" id="kms" placeholder="Current Kilometers">
-        
-        <button id="saveBtn" style="background: #28a745;">Save & Start Inspection</button>
-    </div>
-
-    <div id="existingVehicleSection" class="card hidden">
-        <h3 id="welcomeMsg"></h3>
-        <p>Vehicle already in system.</p>
-        <button onclick="location.reload()">New Search</button>
+            <hr>
+            <button id="submitReportBtn" style="background: #28a745; margin-top: 20px;">Save Full Report</button>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Your specific Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBVnZytKuBeA8YeIaMGnsBJI1lCLKuDdXM",
             authDomain: "workshop-quote-app.firebaseapp.com",
@@ -80,78 +77,96 @@
         const db = getFirestore(app);
         const imgbbKey = "2a38a3f1fcb4df6b74fead8adebe1854";
 
-        let imageLinks = { rear: "", chassis: "", cluster: "" };
+        let currentPlate = "";
+        let inspectionData = {};
+        const items = ["Engine Oil", "Brake Pads", "Suspension", "Tyres", "Battery", "Coolant"];
 
-        // SEARCH FUNCTION
-        document.getElementById('checkBtn').addEventListener('click', async () => {
-            const plate = document.getElementById('plateInput').value.toUpperCase().trim();
-            if (!plate) return alert("Please enter a plate number");
+        // GENERATE CHECKLIST HTML
+        const checklistContent = document.getElementById('checklistContent');
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'check-item';
+            div.innerHTML = `
+                <label>${item}</label>
+                <div class="btn-group">
+                    <button class="btn-green" onclick="setCheck('${item}', 'Good', this)">🟢 OK</button>
+                    <button class="btn-yellow" onclick="setCheck('${item}', 'Warning', this)">🟡 Advise</button>
+                    <button class="btn-red" onclick="setCheck('${item}', 'Bad', this)">🔴 Urgent</button>
+                </div>
+                <input type="text" id="note-${item}" placeholder="Add notes for ${item}..." style="font-size: 13px; height: 35px; margin-top: 5px;">
+            `;
+            checklistContent.appendChild(div);
+        });
 
-            const docRef = doc(db, "vehicles", plate);
-            const docSnap = await getDoc(docRef);
+        window.setCheck = function(item, status, btn) {
+            inspectionData[item] = status;
+            // UI Toggle
+            const buttons = btn.parentElement.querySelectorAll('button');
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        };
 
+        // SEARCH
+        document.getElementById('checkBtn').onclick = async () => {
+            currentPlate = document.getElementById('plateInput').value.toUpperCase().trim();
+            if(!currentPlate) return;
+
+            const docSnap = await getDoc(doc(db, "vehicles", currentPlate));
             if (docSnap.exists()) {
-                const data = docSnap.data();
-                document.getElementById('welcomeMsg').innerText = `Customer: ${data.custName}`;
-                document.getElementById('existingVehicleSection').classList.remove('hidden');
-                document.getElementById('newVehicleSection').classList.add('hidden');
+                showInspection(docSnap.data().custName);
             } else {
                 document.getElementById('newVehicleSection').classList.remove('hidden');
-                document.getElementById('existingVehicleSection').classList.add('hidden');
             }
-        });
+        };
 
-        // UPLOAD LOGIC
-        async function handleUpload(file, statusId, key) {
-            document.getElementById(statusId).innerText = "Uploading to Cloud...";
-            const formData = new FormData();
-            formData.append("image", file);
-
-            try {
-                const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
-                    method: "POST",
-                    body: formData
-                });
-                const result = await response.json();
-                imageLinks[key] = result.data.url;
-                document.getElementById(statusId).innerText = "✅ Photo Ready";
-            } catch (err) {
-                document.getElementById(statusId).innerText = "❌ Upload Failed";
-            }
+        function showInspection(name) {
+            document.getElementById('inspectTitle').innerText = "Inspecting: " + name;
+            document.getElementById('inspectionSection').classList.remove('hidden');
+            document.getElementById('searchSection').classList.add('hidden');
+            document.getElementById('newVehicleSection').classList.add('hidden');
         }
 
-        document.getElementById('photoRear').onchange = (e) => handleUpload(e.target.files[0], 'statusRear', 'rear');
-        document.getElementById('photoChassis').onchange = (e) => handleUpload(e.target.files[0], 'statusChassis', 'chassis');
-        document.getElementById('photoCluster').onchange = (e) => handleUpload(e.target.files[0], 'statusCluster', 'cluster');
+        // SAVE REPORT
+        document.getElementById('submitReportBtn').onclick = async () => {
+            const finalReport = {
+                results: inspectionData,
+                notes: {},
+                timestamp: new Date().toISOString()
+            };
+            
+            items.forEach(item => {
+                finalReport.notes[item] = document.getElementById(`note-${item}`).value;
+            });
 
-        // SAVE LOGIC
-        document.getElementById('saveBtn').addEventListener('click', async () => {
-            const plate = document.getElementById('plateInput').value.toUpperCase().trim();
-            const btn = document.getElementById('saveBtn');
-            btn.innerText = "Saving...";
-            btn.disabled = true;
+            await updateDoc(doc(db, "vehicles", currentPlate), {
+                lastInspection: finalReport
+            });
+            
+            alert("Report Saved Successfully!");
+            location.reload();
+        };
 
-            const vehicleData = {
+        // IMAGE UPLOAD (Reusable)
+        window.uploadImage = async function(input, statusId, key) {
+            document.getElementById(statusId).innerText = "Uploading...";
+            const formData = new FormData();
+            formData.append("image", input.files[0]);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, { method: "POST", body: formData });
+            const json = await res.json();
+            window.lastPhoto = json.data.url;
+            document.getElementById(statusId).innerText = "✅ Done";
+        };
+
+        document.getElementById('saveVehicleBtn').onclick = async () => {
+            const data = {
+                custName: document.getElementById('custName').value,
                 make: document.getElementById('make').value,
                 model: document.getElementById('model').value,
-                custName: document.getElementById('custName').value,
-                custMobile: document.getElementById('custMobile').value,
-                vin: document.getElementById('vin').value,
-                kms: document.getElementById('kms').value,
-                photos: imageLinks,
-                dateAdded: new Date().toISOString()
+                photo: window.lastPhoto || ""
             };
-
-            try {
-                await setDoc(doc(db, "vehicles", plate), vehicleData);
-                alert("Vehicle added to database!");
-                location.reload();
-            } catch (error) {
-                alert("Error saving: " + error.message);
-                btn.innerText = "Save & Start Inspection";
-                btn.disabled = false;
-            }
-        });
+            await setDoc(doc(db, "vehicles", currentPlate), data);
+            showInspection(data.custName);
+        };
     </script>
 </body>
 </html>
