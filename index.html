@@ -6,258 +6,8 @@
     <title>GaragePro | High-End Management System</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏎️</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --success: #2ecc71;
-            --warning: #f1c40f;
-            --danger: #e74c3c;
-            --bg-body: #f1f5f9;
-            --bg-card: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --sidebar-width: 250px;
-            --radius: 12px;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-        }
-
-        * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: var(--bg-body); 
-            color: var(--text-main); 
-            margin: 0; 
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* SIDEBAR */
-        #sidebar {
-            width: var(--sidebar-width);
-            background: #ffffff;
-            border-right: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            padding: 24px 0;
-            z-index: 100;
-        }
-
-        .brand {
-            padding: 0 24px 32px;
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: var(--primary);
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-link {
-            padding: 12px 24px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            border-left: 4px solid transparent;
-        }
-
-        .nav-link:hover { background: #f8fafc; color: var(--text-main); }
-        .nav-link.active {
-            color: var(--primary);
-            background: #eff6ff;
-            border-left-color: var(--primary);
-        }
-
-        /* MAIN CONTENT */
-        #main {
-            flex: 1;
-            overflow-y: auto;
-            padding: 40px;
-            position: relative;
-        }
-
-        .section {
-            display: none;
-            max-width: 800px;
-            margin: 0 auto;
-            animation: slideUp 0.4s ease-out;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .section.active { display: block; }
-
-        /* UI ELEMENTS */
-        .card {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 32px;
-            box-shadow: var(--shadow);
-            margin-bottom: 24px;
-            border: 1px solid #f1f5f9;
-        }
-
-        h2 { font-weight: 700; font-size: 1.8rem; margin-top: 0; letter-spacing: -0.5px; }
-        h3 { font-weight: 600; font-size: 1.1rem; margin-top: 0; color: var(--text-muted); }
-
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .full-width { grid-column: span 2; }
-
-        .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
-        
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            font-size: 0.95rem;
-            background: #fdfdfd;
-        }
-        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-
-        button {
-            padding: 12px 24px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        button.primary { background: var(--primary); color: white; width: 100%; }
-        button.primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); background: #1d4ed8; }
-        
-        button.secondary { background: #f1f5f9; color: var(--text-main); }
-        button.secondary:hover { background: #e2e8f0; }
-
-        /* INSPECTION CHECKLIST */
-        .check-item { padding: 24px 0; border-bottom: 1px solid #f1f5f9; }
-        .check-item:last-child { border-bottom: none; }
-        .btn-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
-        .btn-group button { opacity: 0.4; font-size: 0.8rem; padding: 10px 5px; color: white; font-weight: 700; border: 2px solid transparent; }
-        .btn-group button.active { opacity: 1; border-color: #334155; transform: scale(1.02); box-shadow: var(--shadow); }
-        
-        .btn-green { background: var(--success); }
-        .btn-yellow { background: var(--warning); color: #000 !important; }
-        .btn-red { background: var(--danger); }
-
-        /* PHOTO UPLOADS */
-        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 10px; }
-        .photo-box { 
-            border: 2px dashed #e2e8f0; 
-            border-radius: 10px; 
-            padding: 15px; 
-            text-align: center; 
-            cursor: pointer;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-        .photo-box:hover { border-color: var(--primary); background: #f8fafc; }
-        .photo-preview { width: 100%; height: 60px; border-radius: 6px; object-fit: cover; margin-top: 8px; display: none; }
-
-        /* REPORT VIEW */
-        .status-pill { padding: 4px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; width: fit-content; }
-        .pill-green { background: #dcfce7; color: #166534; }
-        .pill-yellow { background: #fef9c3; color: #854d0e; }
-        .pill-red { background: #fee2e2; color: #991b1b; }
-
-        /* SCANNED HEADER */
-        .scan-header {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            color: white;
-            padding: 40px;
-            border-radius: var(--radius);
-            margin-bottom: 30px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .scan-header::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 2px;
-            background: var(--primary);
-            animation: scan 3s infinite linear;
-            box-shadow: 0 0 15px var(--primary);
-        }
-        @keyframes scan { from { top: 0; } to { top: 100%; } }
-
-        /* CAMERA OVERLAY */
-        #cameraOverlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        #videoViewfinder {
-            width: 90%;
-            max-width: 500px;
-            border: 4px solid var(--primary);
-            border-radius: 20px;
-            overflow: hidden;
-            background: black;
-            position: relative;
-        }
-        #videoViewfinder::after {
-            content: "";
-            position: absolute;
-            top: 50%; left: 10%; width: 80%; height: 2px;
-            background: var(--danger);
-            box-shadow: 0 0 10px var(--danger);
-            animation: scanLine 2s infinite ease-in-out;
-        }
-        @keyframes scanLine {
-            0% { transform: translateY(-100px); }
-            100% { transform: translateY(100px); }
-        }
-        .scanner-actions { margin-top: 20px; display: flex; gap: 10px; width: 90%; max-width: 500px; }
-        
-        #ocrLoader {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.8);
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            backdrop-filter: blur(5px);
-        }
-        .spinner {
-            width: 50px; height: 50px;
-            border: 5px solid rgba(255,255,255,0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s infinite linear;
-            margin-bottom: 15px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        @media (max-width: 768px) {
-            #sidebar { width: 70px; }
-            .brand span, .nav-link span:last-child { display: none; }
-            .form-grid { grid-template-columns: 1fr; }
-            .full-width { grid-column: span 1; }
-            #main { padding: 20px; }
-        }
-    </style>
 </head>
 <body>
 
@@ -274,6 +24,12 @@
             </div>
             <div class="nav-link" onclick="App.showSection('inspection')">
                 <span>🛠️</span> <span>Inspection</span>
+            </div>
+            <div class="nav-link" onclick="App.showSection('customers')">
+                <span>👥</span> <span>Customers</span>
+            </div>
+            <div class="nav-link" onclick="App.showSection('fleet')">
+                <span>🚘</span> <span>Vehicle Fleet</span>
             </div>
             <div class="nav-link" onclick="App.showSection('report')">
                 <span>📄</span> <span>Reports</span>
@@ -396,11 +152,89 @@
             </div>
         </section>
 
+        <!-- CUSTOMERS SECTION -->
+        <section id="customers" class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Customer Directory</h2>
+                <input type="text" id="custSearch" placeholder="Search by name or mobile..." style="max-width:300px; margin:0;" onkeyup="App.filterCustomers(this.value)">
+            </div>
+            <div class="card" style="margin-top: 20px;">
+                <div id="customerList" style="display: grid; gap: 15px;"></div>
+            </div>
+            
+            <!-- Customer Profile Modal (Hidden by Default) -->
+            <div id="custProfile" class="card" style="display:none; border-left: 4px solid var(--primary);">
+                <div style="display: flex; justify-content: space-between;">
+                    <h3 id="profileName" style="color: var(--primary); font-size: 1.5rem; margin-bottom: 5px;"></h3>
+                    <button class="secondary" onclick="document.getElementById('custProfile').style.display='none'">Close</button>
+                </div>
+                <p id="profileMobile" style="font-weight: 700;"></p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                <h4>Linked Vehicles</h4>
+                <div id="linkedVehicles" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+            </div>
+        </section>
+
+        <!-- FLEET SECTION -->
+        <section id="fleet" class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Vehicle Fleet</h2>
+                <button class="primary" style="width: auto;" onclick="App.showSection('registration')">+ Add New Vehicle</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plate Number</th>
+                            <th>Vehicle</th>
+                            <th>VIN / Chassis</th>
+                            <th>Kilometers</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fleetTableBody">
+                        <!-- Dynamic Content -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- EDIT VEHICLE MODAL -->
+        <div id="editVehicleModal" class="modal-overlay">
+            <div class="modal-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin:0;">Edit Vehicle Record</h3>
+                    <span style="cursor:pointer; font-size: 1.5rem;" onclick="App.closeEditModal()">&times;</span>
+                </div>
+                <input type="hidden" id="editPlate">
+                <div class="input-group">
+                    <label>Make</label>
+                    <input type="text" id="editMake">
+                </div>
+                <div class="input-group">
+                    <label>Model</label>
+                    <input type="text" id="editModel">
+                </div>
+                <div class="input-group">
+                    <label>Chassis (VIN)</label>
+                    <input type="text" id="editVin">
+                </div>
+                <div class="input-group">
+                    <label>Mileage (KMS)</label>
+                    <input type="number" id="editKms">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="secondary" style="flex:1;" onclick="App.closeEditModal()">Cancel</button>
+                    <button class="primary" style="flex:2;" onclick="App.saveEditChanges()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // APP CORE
         const App = {
@@ -428,13 +262,17 @@
                 this.db = getFirestore(firebaseApp);
                 this.renderChecklist();
                 this.setupListeners();
+                
+                // Load data for directory pages
+                this.allCustomers = [];
+                this.allVehicles = [];
             },
 
             setupListeners() {
                 document.getElementById('searchBtn').onclick = () => this.handleSearch();
             },
 
-            showSection(id) {
+            async showSection(id) {
                 document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 
@@ -442,8 +280,15 @@
                 if(target) target.classList.add('active');
                 
                 // Active link UI
-                const link = Array.from(document.querySelectorAll('.nav-link')).find(l => l.innerText.toLowerCase().includes(id));
+                const link = Array.from(document.querySelectorAll('.nav-link')).find(l => {
+                    const text = l.innerText.toLowerCase();
+                    return text.includes(id) || (id === 'fleet' && text.includes('fleet'));
+                });
                 if(link) link.classList.add('active');
+
+                // Load appropriate data
+                if(id === 'customers') this.loadCustomers();
+                if(id === 'fleet') this.loadVehicles();
             },
 
             renderChecklist() {
@@ -518,30 +363,176 @@
             },
 
             async finalizeRegistration() {
-                const data = {
-                    plate: this.state.currentPlate,
+                const plate = this.state.currentPlate;
+                const mobile = document.getElementById('regMobile').value.trim();
+                
+                const vehicleData = {
+                    plate: plate,
                     vin: document.getElementById('regVin').value,
                     make: document.getElementById('regMake').value,
                     model: document.getElementById('regModel').value,
                     year: document.getElementById('regYear').value,
                     kms: document.getElementById('regKms').value,
                     customerName: document.getElementById('regName').value,
-                    customerMobile: document.getElementById('regMobile').value,
+                    customerMobile: mobile,
                     photos: { ...this.state.photos },
                     createdAt: new Date().toISOString()
                 };
 
+                const customerData = {
+                    name: vehicleData.customerName,
+                    mobile: mobile,
+                    lastSeen: new Date().toISOString(),
+                    vehicles: [plate] // Start with current vehicle
+                };
+
                 // VALIDATION
-                if(!data.vin || !data.make || !data.customerName) return alert("All vital fields must be completed.");
+                if(!vehicleData.vin || !vehicleData.customerName || !mobile) return alert("Vehicle VIN and Customer Contact are mandatory.");
 
                 try {
-                    await setDoc(doc(this.db, "vehicles", data.plate), data, { merge: true });
-                    this.state.vehicleData = data;
-                    alert("Vehicle File Created Successfully.");
+                    // Update/Create Vehicle
+                    await setDoc(doc(this.db, "vehicles", plate), vehicleData, { merge: true });
+                    
+                    // Update/Create Customer
+                    const custRef = doc(this.db, "customers", mobile);
+                    const custSnap = await getDoc(custRef);
+                    
+                    if(custSnap.exists()){
+                        const existingVehicles = custSnap.data().vehicles || [];
+                        if(!existingVehicles.includes(plate)) existingVehicles.push(plate);
+                        await updateDoc(custRef, { vehicles: existingVehicles, lastSeen: new Date().toISOString() });
+                    } else {
+                        await setDoc(custRef, customerData);
+                    }
+
+                    this.state.vehicleData = vehicleData;
+                    alert("Vehicle & Owner Data Synchronized Successfully.");
                     this.loadVehicleToApp();
                 } catch (e) {
                     console.error(e);
+                    alert("Sync Error: Check Connection.");
                 }
+            },
+
+            // DIRECTORY LOGIC
+            async loadCustomers() {
+                const container = document.getElementById('customerList');
+                container.innerHTML = "Refining Directory...";
+                
+                const querySnapshot = await getDocs(collection(this.db, "customers"));
+                this.allCustomers = [];
+                querySnapshot.forEach(doc => this.allCustomers.push(doc.data()));
+                
+                this.renderCustomers(this.allCustomers);
+            },
+
+            renderCustomers(list) {
+                const container = document.getElementById('customerList');
+                if(list.length === 0) return container.innerHTML = "<p>No matches found.</p>";
+                
+                container.innerHTML = list.map(c => `
+                    <div class="card" style="margin:0; padding: 15px; cursor: pointer; border-left: 2px solid transparent;" onclick="App.viewCustomer('${c.mobile}')">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <span style="font-weight:700;">${c.name}</span>
+                                <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 10px;">${c.mobile}</span>
+                            </div>
+                            <span style="font-size: 0.8rem; background: #eee; padding: 2px 8px; border-radius: 4px;">${c.vehicles?.length || 0} Veh</span>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            filterCustomers(val) {
+                const filtered = this.allCustomers.filter(c => 
+                    c.name.toLowerCase().includes(val.toLowerCase()) || 
+                    c.mobile.includes(val)
+                );
+                this.renderCustomers(filtered);
+            },
+
+            async viewCustomer(mobile) {
+                const cust = this.allCustomers.find(c => c.mobile === mobile);
+                if(!cust) return;
+                
+                document.getElementById('profileName').innerText = cust.name;
+                document.getElementById('profileMobile').innerText = `📞 ${cust.mobile}`;
+                
+                const vehCont = document.getElementById('linkedVehicles');
+                vehCont.innerHTML = (cust.vehicles || []).map(v => `
+                    <button class="secondary" style="font-size: 0.75rem; padding: 5px 12px;" onclick="App.quickSearch('${v}')">🚘 ${v}</button>
+                `).join('');
+                
+                document.getElementById('custProfile').style.display = 'block';
+                document.getElementById('custProfile').scrollIntoView({ behavior: 'smooth' });
+            },
+
+            async loadVehicles() {
+                const container = document.getElementById('fleetTableBody');
+                container.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Authenticating Fleet...</td></tr>";
+                
+                const querySnapshot = await getDocs(collection(this.db, "vehicles"));
+                this.allVehicles = [];
+                querySnapshot.forEach(doc => this.allVehicles.push(doc.data()));
+                
+                container.innerHTML = this.allVehicles.map(v => `
+                    <tr onclick="App.openEditModal('${v.plate}')">
+                        <td>
+                            <div style="display: flex; align-items: center;">
+                                <img src="${v.photos?.rear || ''}" class="table-thumb" style="background:#eee;">
+                                <span style="font-weight: 700; background: #000; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">${v.plate}</span>
+                            </div>
+                        </td>
+                        <td style="font-weight: 500;">${v.make} ${v.model}</td>
+                        <td style="font-family: monospace; color: var(--text-muted);">${v.vin}</td>
+                        <td style="font-weight: 700;">${Number(v.kms).toLocaleString()} KM</td>
+                        <td>
+                            <button class="secondary" style="padding: 6px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); App.quickSearch('${v.plate}')">Inspect</button>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+
+            async openEditModal(plate) {
+                const vehicle = this.allVehicles.find(v => v.plate === plate);
+                if(!vehicle) return;
+
+                document.getElementById('editPlate').value = plate;
+                document.getElementById('editMake').value = vehicle.make;
+                document.getElementById('editModel').value = vehicle.model;
+                document.getElementById('editVin').value = vehicle.vin || "";
+                document.getElementById('editKms').value = vehicle.kms || "";
+
+                document.getElementById('editVehicleModal').style.display = 'flex';
+            },
+
+            closeEditModal() {
+                document.getElementById('editVehicleModal').style.display = 'none';
+            },
+
+            async saveEditChanges() {
+                const plate = document.getElementById('editPlate').value;
+                const updateData = {
+                    make: document.getElementById('editMake').value,
+                    model: document.getElementById('editModel').value,
+                    vin: document.getElementById('editVin').value,
+                    kms: document.getElementById('editKms').value
+                };
+
+                try {
+                    await updateDoc(doc(this.db, "vehicles", plate), updateData);
+                    alert("Vehicle data synchronized.");
+                    this.closeEditModal();
+                    this.loadVehicles(); // Refresh table
+                } catch (e) {
+                    console.error(e);
+                    alert("Update Error.");
+                }
+            },
+
+            quickSearch(plate) {
+                document.getElementById('plateInput').value = plate;
+                this.handleSearch();
             },
 
             async finalizeInspection() {
